@@ -1,6 +1,5 @@
 package co.edu.udea.compumovil.gr09_20251.lab1.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
