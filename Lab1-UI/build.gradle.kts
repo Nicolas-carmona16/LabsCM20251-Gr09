@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "co.edu.udea.compumovil.gr09_20251.lab1"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "co.edu.udea.compumovil.gr09_20251.lab1"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -36,6 +36,9 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 }
 
