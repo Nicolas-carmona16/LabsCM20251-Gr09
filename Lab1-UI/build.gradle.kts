@@ -1,17 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "co.edu.udea.compumovil.gr09_20251.lab1"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "co.edu.udea.compumovil.gr09_20251.lab1"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -36,9 +36,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
     }
 }
 
