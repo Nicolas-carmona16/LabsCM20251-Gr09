@@ -1,0 +1,29 @@
+<resources>
+    <string name="title_activity_estoesactivity">Thisisactivity</string>
+    <string name="title_activity_personal_data">PersonalDataActivity</string>
+    <string name="app_name">Personal Data</string>
+    <string name="personal_data_title">Personal Data</string>
+    <string name="first_names">First Names</string>
+    <string name="last_names">Last Names</string>
+    <string name="gender">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="birth_date">Birth Date</string>
+    <string name="select_date">Select date</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="education_level">Education Level</string>
+    <string name="label_educational_level">Select</string>
+    <string name="next">next</string>
+    <string-array name="education_levels">
+        <item>Primary</item>
+        <item>Secondary</item>
+        <item>High School</item>
+        <item>Technical</item>
+        <item>Technology</item>
+        <item>Undergraduate</item>
+        <item>Specialization</item>
+        <item>Master\'s</item>
+        <item>PhD</item>
+    </string-array>
+</resources>

@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">LabsCM20251-Gr09</string>
+    <string name="title_activity_estoesactivity">Estoesactivity</string>
+    <string name="title_activity_personal_data">PersonalDataActivity</string>
+    <string name="app_name">Datos Personales</string>
+    <string name="personal_data_title">Datos Personales</string>
+    <string name="first_names">Nombres</string>
+    <string name="last_names">Apellidos</string>
+    <string name="gender">Sexo</string>
+    <string name="male">Masculino</string>
+    <string name="female">Femenino</string>
+    <string name="birth_date">Fecha de Nacimiento</string>
+    <string name="select_date">Seleccionar fecha</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="education_level">Grado de Escolaridad</string>
+    <string name="label_educational_level">Seleccione</string>
+    <string name="next">Siguiente</string>
+    <string-array name="education_levels">
+        <item>Primaria</item>
+        <item>Secundaria</item>
+        <item>Bachillerato</item>
+        <item>Técnica</item>
+        <item>Tecnología</item>
+        <item>Pregrado</item>
+        <item>Especialización</item>
+        <item>Maestría</item>
+        <item>Doctorado</item>
+    </string-array>
 </resources>

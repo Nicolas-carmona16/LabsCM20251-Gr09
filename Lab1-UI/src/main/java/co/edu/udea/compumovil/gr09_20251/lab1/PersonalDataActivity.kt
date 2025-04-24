@@ -3,15 +3,235 @@ package co.edu.udea.compumovil.gr09_20251.lab1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import co.edu.udea.compumovil.gr09_20251.lab1.ui.theme.LabsCM20251Gr09Theme
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class PersonalDataActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LabsCM20251Gr09Theme {
-                // Aquí llamaremos a PersonalDataScreen() más adelante
+            PersonalDataScreen()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PersonalDataScreen() {
+    var nombres by remember { mutableStateOf("") }
+    var apellidos by remember { mutableStateOf("") }
+    var sexo by remember { mutableStateOf("") }
+    var escolaridad by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    val escolaridades = listOf(*stringArrayResource(R.array.education_levels))
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    var selectedDate by remember { mutableStateOf<Date?>(null) }
+    val dateFormatter = remember {
+        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.personal_data_title),
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        OutlinedTextField(
+            value = nombres,
+            onValueChange = { nombres = it },
+            label = { RequiredFieldLabel(stringResource(R.string.first_names)) },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words,
+                autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+            singleLine = true
+        )
+
+        OutlinedTextField(
+            value = apellidos,
+            onValueChange = { apellidos = it },
+            label = { RequiredFieldLabel(stringResource(R.string.last_names)) },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words,
+                autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+            ),
+            singleLine = true
+        )
+
+        Text(text = stringResource(R.string.gender))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = sexo == "Masculino",
+                    onClick = { sexo = "Masculino" }
+                )
+                Text(
+                    text = stringResource(R.string.male),
+                    modifier = Modifier.clickable { sexo = "Masculino" }
+                )
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = sexo == "Femenino",
+                    onClick = { sexo = "Femenino" }
+                )
+                Text(
+                    text = stringResource(R.string.female),
+                    modifier = Modifier.clickable { sexo = "Femenino" }
+                )
             }
         }
+
+        RequiredFieldLabel(text = stringResource(R.string.birth_date))
+        OutlinedTextField(
+            value = selectedDate?.let { dateFormatter.format(it) } ?: "",
+            onValueChange = {},
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(Icons.Default.DateRange, contentDescription = "Seleccionar fecha")
+                }
+            },
+            placeholder = { Text(stringResource(R.string.select_date)) }
+        )
+
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let {
+                                selectedDate = Date(it)
+                            }
+                            showDatePicker = false
+                        }
+                    ) {
+                        Text( text = stringResource(R.string.confirm) )
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showDatePicker = false }
+                    ) {
+                        Text( text = stringResource(R.string.cancel) )
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    colors = DatePickerDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            }
+        }
+
+        Text(text = stringResource(R.string.education_level))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                value = escolaridad,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
+                label = { Text(stringResource(R.string.label_educational_level)) }
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                escolaridades.forEach { nivel ->
+                    DropdownMenuItem(
+                        text = { Text(nivel) },
+                        onClick = {
+                            escolaridad = nivel
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.next))
+        }
+    }
+
+}
+
+@Composable
+fun RequiredFieldLabel(text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(text)
+        Text(
+            text = "*",
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(start = 2.dp)
+        )
     }
 }
