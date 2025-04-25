@@ -46,6 +46,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 
 class PersonalDataActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,15 +61,26 @@ class PersonalDataActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalDataScreen() {
-    var nombres by remember { mutableStateOf("") }
-    var apellidos by remember { mutableStateOf("") }
-    var sexo by remember { mutableStateOf("") }
-    var escolaridad by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var nombres by rememberSaveable { mutableStateOf("") }
+    var apellidos by rememberSaveable { mutableStateOf("") }
+    var sexo by rememberSaveable { mutableStateOf("") }
+    var escolaridad by rememberSaveable { mutableStateOf("") }
+    var expanded by rememberSaveable { mutableStateOf(false) }
     val escolaridades = listOf(*stringArrayResource(R.array.education_levels))
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    var selectedDate by remember { mutableStateOf<Date?>(null) }
+    var selectedDate by rememberSaveable(
+        stateSaver = Saver <Date?, Bundle>(
+            save = { date ->
+                Bundle().apply {
+                    putLong("date_key", date?.time ?: -1)
+                }
+            },
+            restore = { bundle ->
+                bundle.getLong("date_key").takeIf { it != -1L }?.let { Date(it) }
+            }
+        )
+    ) { mutableStateOf<Date?>(null) }
     val dateFormatter = remember {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     }
