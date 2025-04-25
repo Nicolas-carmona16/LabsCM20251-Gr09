@@ -1,8 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_activity_estoesactivity">Thisisactivity</string>
     <string name="title_activity_personal_data">PersonalDataActivity</string>
+    <string name="title_activity_contact_data">ContactDataActivity</string>
     <string name="app_name">Personal Data</string>
     <string name="personal_data_title">Personal Data</string>
+    <string name="contact_data_title">Contact Information</string>
     <string name="first_names">First Names</string>
     <string name="last_names">Last Names</string>
     <string name="gender">Gender</string>
@@ -14,22 +17,12 @@
     <string name="cancel">Cancel</string>
     <string name="education_level">Education Level</string>
     <string name="label_educational_level">Select</string>
-    <string name="next">next</string>
-    <string-array name="education_levels">
-        <item>Primary</item>
-        <item>Secondary</item>
-        <item>High School</item>
-        <item>Technical</item>
-        <item>Technology</item>
-        <item>Undergraduate</item>
-        <item>Specialization</item>
-        <item>Master\'s</item>
-        <item>PhD</item>
-    </string-array>
+    <string name="next">Next</string>
+    <string name="phone">Phone</string>
+    <string name="email">Email</string>
+    <string name="country">Country</string>
+    <string name="address">Address</string>
+    <string name="city">City</string>
     <string name="required_field">Required field</string>
-    <string name="log_personal_data_title">Personal information:</string>
-    <string name="log_birth_date_format">Born on %1$s</string>
-    <string name="log_no_date_selected">Not selected</string>
-    <string name="title_activity_contact_data">ContactDataActivity</string>
-    <string name="contact_data_title">Contact Data</string>
+
 </resources>
