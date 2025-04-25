@@ -26,4 +26,7 @@
         <item>Maestría</item>
         <item>Doctorado</item>
     </string-array>
+    <string name="required_field">Campo obligatorio</string>
+    <string name="title_activity_contact_data">ContactDataActivity</string>
+    <string name="contact_data_title">Datos de Contacto</string>
 </resources>

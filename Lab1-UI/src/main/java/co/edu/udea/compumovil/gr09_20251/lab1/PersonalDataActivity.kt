@@ -1,5 +1,6 @@
 package co.edu.udea.compumovil.gr09_20251.lab1
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,10 +45,13 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePickerState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
 
 class PersonalDataActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,12 +69,15 @@ fun PersonalDataScreen() {
     var apellidos by rememberSaveable { mutableStateOf("") }
     var sexo by rememberSaveable { mutableStateOf("") }
     var escolaridad by rememberSaveable { mutableStateOf("") }
+    var nombresError by rememberSaveable { mutableStateOf(false) }
+    var apellidosError by rememberSaveable { mutableStateOf(false) }
+    var fechaError by rememberSaveable { mutableStateOf(false) }
     var expanded by rememberSaveable { mutableStateOf(false) }
     val escolaridades = listOf(*stringArrayResource(R.array.education_levels))
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     var selectedDate by rememberSaveable(
-        stateSaver = Saver <Date?, Bundle>(
+        stateSaver = Saver<Date?, Bundle>(
             save = { date ->
                 Bundle().apply {
                     putLong("date_key", date?.time ?: -1)
@@ -85,6 +92,34 @@ fun PersonalDataScreen() {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val context = LocalContext.current
+
+    fun validateFields(): Boolean {
+        nombresError = nombres.isBlank()
+        apellidosError = apellidos.isBlank()
+        fechaError = selectedDate == null
+
+        return !nombresError && !apellidosError && !fechaError
+    }
+
+    fun logUserData() {
+        Log.d("UserData", "***********************************")
+        Log.d("UserData", "Información personal:")
+        Log.d("UserData", "$nombres $apellidos")
+        Log.d("UserData", sexo)
+        Log.d("UserData", "Nació el ${selectedDate?.let { dateFormatter.format(it) } ?: "No seleccionada"}")
+        Log.d("UserData", escolaridad)
+        Log.d("UserData", "***********************************")
+    }
+
+    fun handleNextButton() {
+        if (validateFields()) {
+            logUserData()
+            context.startActivity(Intent(context, ContactDataActivity::class.java))
+        } else {
+            Log.w("UserData", "Validación fallida - Complete los campos obligatorios")
+        }
+    }
 
     if (isLandscape) {
         Column(
@@ -104,166 +139,86 @@ fun PersonalDataScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedTextField(
-                    value = nombres,
-                    onValueChange = { nombres = it },
-                    label = { RequiredFieldLabel(stringResource(R.string.first_names)) },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        autoCorrectEnabled = false,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                    ),
-                    singleLine = true
-                )
-
-                OutlinedTextField(
-                    value = apellidos,
-                    onValueChange = { apellidos = it },
-                    label = { RequiredFieldLabel(stringResource(R.string.last_names)) },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        autoCorrectEnabled = false,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                    ),
-                    singleLine = true
-                )
-            }
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(text = "${stringResource(R.string.gender)} :")
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(
-                            selected = sexo == "Masculino",
-                            onClick = { sexo = "Masculino" }
-                        )
-                        Text(
-                            text = stringResource(R.string.male),
-                            modifier = Modifier.clickable { sexo = "Masculino" }
-                        )
-                    }
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(
-                            selected = sexo == "Femenino",
-                            onClick = { sexo = "Femenino" }
-                        )
-                        Text(
-                            text = stringResource(R.string.female),
-                            modifier = Modifier.clickable { sexo = "Femenino" }
-                        )
-                    }
-                }
-            }
-
-            Column {
-                RequiredFieldLabel(text = stringResource(R.string.birth_date))
-                OutlinedTextField(
-                    value = selectedDate?.let { dateFormatter.format(it) } ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        IconButton(onClick = { showDatePicker = true }) {
-                            Icon(Icons.Default.DateRange, contentDescription = "Seleccionar fecha")
-                        }
-                    },
-                    placeholder = { Text(stringResource(R.string.select_date)) }
-                )
-
-                if (showDatePicker) {
-                    DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    datePickerState.selectedDateMillis?.let {
-                                        selectedDate = Date(it)
-                                    }
-                                    showDatePicker = false
-                                }
-                            ) {
-                                Text(text = stringResource(R.string.confirm))
-                            }
-                        },
-                        dismissButton = {
-                            Button(
-                                onClick = { showDatePicker = false }
-                            ) {
-                                Text(text = stringResource(R.string.cancel))
-                            }
-                        }
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                                .heightIn(max = 400.dp)
-                        ) {
-                            DatePicker(
-                                state = datePickerState,
-                                colors = DatePickerDefaults.colors(
-                                    containerColor = MaterialTheme.colorScheme.surface
-                                ),
-                                title = null,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                }
-            }
-
-            Column {
-                Text(text = stringResource(R.string.education_level))
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it }
-                ) {
+                Column(modifier = Modifier.weight(1f)) {
                     OutlinedTextField(
-                        value = escolaridad,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        value = nombres,
+                        onValueChange = {
+                            nombres = it
+                            nombresError = false
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
-                        label = { Text(stringResource(R.string.label_educational_level)) }
+                        label = { RequiredFieldLabel(stringResource(R.string.first_names)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = nombresError,
+                        supportingText = {
+                            if (nombresError) ErrorText(stringResource(R.string.required_field))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words,
+                            autoCorrectEnabled = false,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
+                        ),
+                        singleLine = true
                     )
+                }
 
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        escolaridades.forEach { nivel ->
-                            DropdownMenuItem(
-                                text = { Text(nivel) },
-                                onClick = {
-                                    escolaridad = nivel
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
+                Column(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = apellidos,
+                        onValueChange = {
+                            apellidos = it
+                            apellidosError = false
+                        },
+                        label = { RequiredFieldLabel(stringResource(R.string.last_names)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = apellidosError,
+                        supportingText = {
+                            if (apellidosError) ErrorText(stringResource(R.string.required_field))
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words,
+                            autoCorrectEnabled = false,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
+                        ),
+                        singleLine = true
+                    )
                 }
             }
 
-            Button(
-                onClick = { },
-                modifier = Modifier.fillMaxWidth()
+            GenderSelection(sexo) { sexo = it }
+
+            DateSelectionField(
+                selectedDate = selectedDate,
+                isError = fechaError,
+                onDateSelected = { date ->
+                    selectedDate = date
+                    fechaError = false
+                },
+                showDatePicker = showDatePicker,
+                onShowDatePickerChanged = { showDatePicker = it },
+                datePickerState = datePickerState,
+                dateFormatter = dateFormatter
+            )
+
+            EducationLevelDropdown(
+                escolaridad = escolaridad,
+                escolaridades = escolaridades,
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                onLevelSelected = { escolaridad = it }
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(text = stringResource(R.string.next))
+                Button(
+                    onClick = { handleNextButton() },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(text = stringResource(R.string.next))
+                }
             }
         }
     } else {
@@ -280,9 +235,16 @@ fun PersonalDataScreen() {
 
             OutlinedTextField(
                 value = nombres,
-                onValueChange = { nombres = it },
+                onValueChange = {
+                    nombres = it
+                    nombresError = false
+                },
                 label = { RequiredFieldLabel(stringResource(R.string.first_names)) },
                 modifier = Modifier.fillMaxWidth(),
+                isError = nombresError,
+                supportingText = {
+                    if (nombresError) ErrorText(stringResource(R.string.required_field))
+                },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Words,
                     autoCorrectEnabled = false,
@@ -294,9 +256,16 @@ fun PersonalDataScreen() {
 
             OutlinedTextField(
                 value = apellidos,
-                onValueChange = { apellidos = it },
+                onValueChange = {
+                    apellidos = it
+                    apellidosError = false
+                },
                 label = { RequiredFieldLabel(stringResource(R.string.last_names)) },
                 modifier = Modifier.fillMaxWidth(),
+                isError = apellidosError,
+                supportingText = {
+                    if (apellidosError) ErrorText(stringResource(R.string.required_field))
+                },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Words,
                     autoCorrectEnabled = false,
@@ -306,68 +275,182 @@ fun PersonalDataScreen() {
                 singleLine = true
             )
 
-            Text(text = stringResource(R.string.gender))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = sexo == "Masculino",
-                        onClick = { sexo = "Masculino" }
-                    )
-                    Text(
-                        text = stringResource(R.string.male),
-                        modifier = Modifier.clickable { sexo = "Masculino" }
-                    )
-                }
+            GenderSelection(sexo) { sexo = it }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = sexo == "Femenino",
-                        onClick = { sexo = "Femenino" }
-                    )
-                    Text(
-                        text = stringResource(R.string.female),
-                        modifier = Modifier.clickable { sexo = "Femenino" }
-                    )
-                }
-            }
-
-            RequiredFieldLabel(text = stringResource(R.string.birth_date))
-            OutlinedTextField(
-                value = selectedDate?.let { dateFormatter.format(it) } ?: "",
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Default.DateRange, contentDescription = "Seleccionar fecha")
-                    }
+            DateSelectionField(
+                selectedDate = selectedDate,
+                isError = fechaError,
+                onDateSelected = { date ->
+                    selectedDate = date
+                    fechaError = false
                 },
-                placeholder = { Text(stringResource(R.string.select_date)) }
+                showDatePicker = showDatePicker,
+                onShowDatePickerChanged = { showDatePicker = it },
+                datePickerState = datePickerState,
+                dateFormatter = dateFormatter
             )
 
-            if (showDatePicker) {
+            EducationLevelDropdown(
+                escolaridad = escolaridad,
+                escolaridades = escolaridades,
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                onLevelSelected = { escolaridad = it }
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { handleNextButton() },
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    Text(text = stringResource(R.string.next))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GenderSelection(
+    selectedSex: String,
+    onSexSelected: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "${stringResource(R.string.gender)} :",
+            modifier = Modifier.padding(end = 16.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = selectedSex == "Masculino",
+                    onClick = { onSexSelected("Masculino") }
+                )
+                Text(
+                    text = stringResource(R.string.male),
+                    modifier = Modifier
+                        .clickable { onSexSelected("Masculino") }
+                        .padding(start = 4.dp)
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = selectedSex == "Femenino",
+                    onClick = { onSexSelected("Femenino") }
+                )
+                Text(
+                    text = stringResource(R.string.female),
+                    modifier = Modifier
+                        .clickable { onSexSelected("Femenino") }
+                        .padding(start = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateSelectionField(
+    selectedDate: Date?,
+    isError: Boolean,
+    onDateSelected: (Date) -> Unit,
+    showDatePicker: Boolean,
+    onShowDatePickerChanged: (Boolean) -> Unit,
+    datePickerState: DatePickerState,
+    dateFormatter: SimpleDateFormat
+) {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    Column {
+        RequiredFieldLabel(text = stringResource(R.string.birth_date))
+        OutlinedTextField(
+            value = selectedDate?.let { dateFormatter.format(it) } ?: "",
+            onValueChange = {},
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth(),
+            isError = isError,
+            trailingIcon = {
+                IconButton(onClick = { onShowDatePickerChanged(true) }) {
+                    Icon(Icons.Default.DateRange, contentDescription = "Seleccionar fecha")
+                }
+            },
+            placeholder = { Text(stringResource(R.string.select_date)) }
+        )
+        if (isError) {
+            ErrorText(
+                text = stringResource(R.string.required_field),
+                modifier = Modifier
+                    .padding(top = 4.dp, start = 16.dp)
+            )
+        }
+
+        if (showDatePicker) {
+            if (isLandscape) {
                 DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
+                    onDismissRequest = { onShowDatePickerChanged(false) },
                     confirmButton = {
                         Button(
                             onClick = {
                                 datePickerState.selectedDateMillis?.let {
-                                    selectedDate = Date(it)
+                                    onDateSelected(Date(it))
                                 }
-                                showDatePicker = false
+                                onShowDatePickerChanged(false)
                             }
                         ) {
                             Text(text = stringResource(R.string.confirm))
                         }
                     },
                     dismissButton = {
+                        Button(onClick = { onShowDatePickerChanged(false) }) {
+                            Text(text = stringResource(R.string.cancel))
+                        }
+                    }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .heightIn(max = 400.dp)
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            title = null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            } else {
+                DatePickerDialog(
+                    onDismissRequest = { onShowDatePickerChanged(false) },
+                    confirmButton = {
                         Button(
-                            onClick = { showDatePicker = false }
+                            onClick = {
+                                datePickerState.selectedDateMillis?.let {
+                                    onDateSelected(Date(it))
+                                }
+                                onShowDatePickerChanged(false)
+                            }
                         ) {
+                            Text(text = stringResource(R.string.confirm))
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { onShowDatePickerChanged(false) }) {
                             Text(text = stringResource(R.string.cancel))
                         }
                     }
@@ -380,46 +463,51 @@ fun PersonalDataScreen() {
                     )
                 }
             }
+        }
+    }
+}
 
-            Text(text = stringResource(R.string.education_level))
-            ExposedDropdownMenuBox(
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EducationLevelDropdown(
+    escolaridad: String,
+    escolaridades: List<String>,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onLevelSelected: (String) -> Unit
+) {
+    Column {
+        Text(text = stringResource(R.string.education_level))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = onExpandedChange
+        ) {
+            OutlinedTextField(
+                value = escolaridad,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
+                label = { Text(stringResource(R.string.label_educational_level)) }
+            )
+
+            ExposedDropdownMenu(
                 expanded = expanded,
-                onExpandedChange = { expanded = it }
+                onDismissRequest = { onExpandedChange(false) }
             ) {
-                OutlinedTextField(
-                    value = escolaridad,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
-                    label = { Text(stringResource(R.string.label_educational_level)) }
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    escolaridades.forEach { nivel ->
-                        DropdownMenuItem(
-                            text = { Text(nivel) },
-                            onClick = {
-                                escolaridad = nivel
-                                expanded = false
-                            }
-                        )
-                    }
+                escolaridades.forEach { nivel ->
+                    DropdownMenuItem(
+                        text = { Text(nivel) },
+                        onClick = {
+                            onLevelSelected(nivel)
+                            onExpandedChange(false)
+                        }
+                    )
                 }
-            }
-
-            Button(
-                onClick = { },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = stringResource(R.string.next))
             }
         }
     }
@@ -435,4 +523,14 @@ fun RequiredFieldLabel(text: String) {
             modifier = Modifier.padding(start = 2.dp)
         )
     }
+}
+
+@Composable
+fun ErrorText(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = modifier
+    )
 }
