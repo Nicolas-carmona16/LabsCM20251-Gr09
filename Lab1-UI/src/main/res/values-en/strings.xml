@@ -27,6 +27,9 @@
         <item>PhD</item>
     </string-array>
     <string name="required_field">Required field</string>
+    <string name="log_personal_data_title">Personal information:</string>
+    <string name="log_birth_date_format">Born on %1$s</string>
+    <string name="log_no_date_selected">Not selected</string>
     <string name="title_activity_contact_data">ContactDataActivity</string>
     <string name="contact_data_title">Contact Data</string>
 </resources>

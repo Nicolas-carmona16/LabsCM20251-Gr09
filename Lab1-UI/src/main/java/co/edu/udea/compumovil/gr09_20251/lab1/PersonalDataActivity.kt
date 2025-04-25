@@ -1,5 +1,6 @@
 package co.edu.udea.compumovil.gr09_20251.lab1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -102,19 +103,31 @@ fun PersonalDataScreen() {
         return !nombresError && !apellidosError && !fechaError
     }
 
-    fun logUserData() {
+    fun logUserData(context: Context, nombres: String, apellidos: String, sexo: String,
+                    selectedDate: Date?, escolaridad: String, dateFormatter: SimpleDateFormat) {
         Log.d("UserData", "***********************************")
-        Log.d("UserData", "Información personal:")
+        Log.d("UserData", context.getString(R.string.log_personal_data_title))
         Log.d("UserData", "$nombres $apellidos")
         Log.d("UserData", sexo)
-        Log.d("UserData", "Nació el ${selectedDate?.let { dateFormatter.format(it) } ?: "No seleccionada"}")
+        val dateText = selectedDate?.let { dateFormatter.format(it) }
+            ?: context.getString(R.string.log_no_date_selected)
+        val birthDateMessage = context.getString(R.string.log_birth_date_format, dateText)
+        Log.d("UserData", birthDateMessage)
         Log.d("UserData", escolaridad)
         Log.d("UserData", "***********************************")
     }
 
     fun handleNextButton() {
         if (validateFields()) {
-            logUserData()
+            logUserData(
+                context = context,
+                nombres = nombres,
+                apellidos = apellidos,
+                sexo = sexo,
+                selectedDate = selectedDate,
+                escolaridad = escolaridad,
+                dateFormatter = dateFormatter
+            )
             context.startActivity(Intent(context, ContactDataActivity::class.java))
         } else {
             Log.w("UserData", "Validación fallida - Complete los campos obligatorios")
@@ -318,6 +331,8 @@ fun GenderSelection(
     selectedSex: String,
     onSexSelected: (String) -> Unit
 ) {
+    val male = stringResource(R.string.male)
+    val female = stringResource(R.string.female)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -335,25 +350,25 @@ fun GenderSelection(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = selectedSex == "Masculino",
-                    onClick = { onSexSelected("Masculino") }
+                    selected = selectedSex == male,
+                    onClick = { onSexSelected(male) }
                 )
                 Text(
-                    text = stringResource(R.string.male),
+                    text = male,
                     modifier = Modifier
-                        .clickable { onSexSelected("Masculino") }
+                        .clickable { onSexSelected(male) }
                         .padding(start = 4.dp)
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = selectedSex == "Femenino",
-                    onClick = { onSexSelected("Femenino") }
+                    selected = selectedSex == female,
+                    onClick = { onSexSelected(female) }
                 )
                 Text(
                     text = stringResource(R.string.female),
                     modifier = Modifier
-                        .clickable { onSexSelected("Femenino") }
+                        .clickable { onSexSelected(female) }
                         .padding(start = 4.dp)
                 )
             }
