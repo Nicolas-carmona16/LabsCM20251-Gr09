@@ -32,4 +32,37 @@
     <string name="log_no_date_selected">No seleccionada</string>
     <string name="title_activity_contact_data">ContactDataActivity</string>
     <string name="contact_data_title">Datos de Contacto</string>
+    <string name="phone">Teléfono</string>
+    <string name="address">Dirección</string>
+    <string name="email">Correo electrónico</string>
+    <string name="country">País</string>
+    <string name="city">Ciudad</string>
+    <string name="invalid_email">Formato de email inválido</string>
+    <string name="log_contact_data_title">Información del contacto:</string>
+    <string name="log_phone_format">Teléfono: %s</string>
+    <string name="log_address_format">Dirección: %s</string>
+    <string name="log_email_format">Email: %s</string>
+    <string name="log_country_format">País: %s</string>
+    <string name="log_city_format">Ciudad: %s</string>
+    <string-array name="latin_america_countries">
+        <item>Argentina</item>
+        <item>Bolivia</item>
+        <item>Brasil</item>
+        <item>Chile</item>
+        <item>Colombia</item>
+        <item>Costa Rica</item>
+        <item>Cuba</item>
+        <item>Ecuador</item>
+        <item>El Salvador</item>
+        <item>Guatemala</item>
+        <item>Honduras</item>
+        <item>México</item>
+        <item>Nicaragua</item>
+        <item>Panamá</item>
+        <item>Paraguay</item>
+        <item>Perú</item>
+        <item>República Dominicana</item>
+        <item>Uruguay</item>
+        <item>Venezuela</item>
+    </string-array>
 </resources>

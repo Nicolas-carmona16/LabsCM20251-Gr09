@@ -32,4 +32,16 @@
     <string name="log_no_date_selected">Not selected</string>
     <string name="title_activity_contact_data">ContactDataActivity</string>
     <string name="contact_data_title">Contact Data</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="email">Email</string>
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="log_contact_data_title">Contact information:</string>
+    <string name="log_phone_format">Phone: %s</string>
+    <string name="log_address_format">Address: %s</string>
+    <string name="log_email_format">Email: %s</string>
+    <string name="log_country_format">Country: %s</string>
+    <string name="log_city_format">City: %s</string>
 </resources>

@@ -108,12 +108,16 @@ fun PersonalDataScreen() {
         Log.d("UserData", "***********************************")
         Log.d("UserData", context.getString(R.string.log_personal_data_title))
         Log.d("UserData", "$nombres $apellidos")
-        Log.d("UserData", sexo)
+        if (sexo.isNotBlank()) {
+            Log.d("UserData", sexo)
+        }
         val dateText = selectedDate?.let { dateFormatter.format(it) }
             ?: context.getString(R.string.log_no_date_selected)
         val birthDateMessage = context.getString(R.string.log_birth_date_format, dateText)
         Log.d("UserData", birthDateMessage)
-        Log.d("UserData", escolaridad)
+        if (escolaridad.isNotBlank()) {
+            Log.d("UserData", escolaridad)
+        }
         Log.d("UserData", "***********************************")
     }
 

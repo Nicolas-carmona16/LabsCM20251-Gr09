@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
@@ -17,3 +18,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Lab1-UI"
+include(":app")
