@@ -57,11 +57,12 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 
+// Clase de actividad que despliega la pantalla de datos personales
 class PersonalDataActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PersonalDataScreen()
+            PersonalDataScreen() // Llama al Composable principal
         }
     }
 }
@@ -69,17 +70,31 @@ class PersonalDataActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalDataScreen() {
+
+    // Estados para almacenar los datos personales
     var nombres by rememberSaveable { mutableStateOf("") }
     var apellidos by rememberSaveable { mutableStateOf("") }
     var sexo by rememberSaveable { mutableStateOf("") }
     var escolaridad by rememberSaveable { mutableStateOf("") }
+
+    // Estados para el control de errores de validación
     var nombresError by rememberSaveable { mutableStateOf(false) }
     var apellidosError by rememberSaveable { mutableStateOf(false) }
     var fechaError by rememberSaveable { mutableStateOf(false) }
+
+    // Estado para controlar la expansión del menú de escolaridad
     var expanded by rememberSaveable { mutableStateOf(false) }
+
+    // Carga de opciones de escolaridad desde recursos
     val escolaridades = listOf(*stringArrayResource(R.array.education_levels))
+
+    // Estado para mostrar el diálogo de selección de fecha
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
+
+    // Estado del DatePicker (para seleccionar fecha de nacimiento)
     val datePickerState = rememberDatePickerState()
+
+    // Estado para almacenar la fecha seleccionada
     var selectedDate by rememberSaveable(
         stateSaver = Saver<Date?, Bundle>(
             save = { date ->
@@ -92,12 +107,19 @@ fun PersonalDataScreen() {
             }
         )
     ) { mutableStateOf<Date?>(null) }
+
+    // Formateador de fecha a dd/MM/yyyy
     val dateFormatter = remember {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     }
+
+    // Detecta si el dispositivo está en orientación horizontal
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    // Obtiene el contexto de la aplicación
     val context = LocalContext.current
 
+    // Función para validar que los campos obligatorios estén diligenciados
     fun validateFields(): Boolean {
         nombresError = nombres.isBlank()
         apellidosError = apellidos.isBlank()
@@ -124,8 +146,11 @@ fun PersonalDataScreen() {
         Log.d("UserData", "***********************************")
     }
 
+    // Función que maneja el evento de presionar el botón "Siguiente"
     fun handleNextButton() {
         if (validateFields()) {
+
+            // Si todos los campos son válidos, registra los datos en Logcat
             logUserData(
                 context = context,
                 nombres = nombres,
@@ -135,12 +160,16 @@ fun PersonalDataScreen() {
                 escolaridad = escolaridad,
                 dateFormatter = dateFormatter
             )
+
+            // Navega a la pantalla de datos de contacto
             context.startActivity(Intent(context, ContactDataActivity::class.java))
         } else {
+            // Si falla la validación, muestra un warning en Logcat
             Log.w("UserData", "Validación fallida - Complete los campos obligatorios")
         }
     }
 
+    // Sección de UI adaptada a orientación horizontal (landscape)
     if (isLandscape) {
         Column(
             modifier = Modifier
@@ -149,17 +178,22 @@ fun PersonalDataScreen() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+            // Título principal
             Text(
                 text = stringResource(R.string.personal_data_title),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Fila para nombres y apellidos, cada uno ocupa la mitad del ancho
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Column(modifier = Modifier.weight(1f)) {
+
+                    // Campo de texto para nombres
                     OutlinedTextField(
                         value = nombres,
                         onValueChange = {
@@ -189,6 +223,8 @@ fun PersonalDataScreen() {
                 }
 
                 Column(modifier = Modifier.weight(1f)) {
+
+                    // Campo de texto para apellidos
                     OutlinedTextField(
                         value = apellidos,
                         onValueChange = {
@@ -218,8 +254,10 @@ fun PersonalDataScreen() {
                 }
             }
 
+            // Composable  para seleccionar género
             GenderSelection(sexo) { sexo = it }
 
+            // Composable  para seleccionar la fecha de nacimiento
             DateSelectionField(
                 selectedDate = selectedDate,
                 isError = fechaError,
@@ -233,6 +271,7 @@ fun PersonalDataScreen() {
                 dateFormatter = dateFormatter
             )
 
+            // Composable para seleccionar nivel educativo
             EducationLevelDropdown(
                 escolaridad = escolaridad,
                 escolaridades = escolaridades,
@@ -241,6 +280,7 @@ fun PersonalDataScreen() {
                 onLevelSelected = { escolaridad = it }
             )
 
+            // Botón "Siguiente" alineado a la derecha
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -254,17 +294,22 @@ fun PersonalDataScreen() {
             }
         }
     } else {
+
+        // Sección de UI adaptada a orientación vertical (portrait)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+            // Título principal
             Text(
                 text = stringResource(R.string.personal_data_title),
                 style = MaterialTheme.typography.headlineMedium
             )
 
+            // Campo de texto para nombres
             OutlinedTextField(
                 value = nombres,
                 onValueChange = {
@@ -292,6 +337,7 @@ fun PersonalDataScreen() {
                 singleLine = true
             )
 
+            // Campo de texto para apellidos
             OutlinedTextField(
                 value = apellidos,
                 onValueChange = {
@@ -319,8 +365,10 @@ fun PersonalDataScreen() {
                 singleLine = true
             )
 
+            // Muestra el componente de selección de género
             GenderSelection(sexo) { sexo = it }
 
+            // Muestra el campo de selección de fecha de nacimiento
             DateSelectionField(
                 selectedDate = selectedDate,
                 isError = fechaError,
@@ -334,6 +382,7 @@ fun PersonalDataScreen() {
                 dateFormatter = dateFormatter
             )
 
+            // Muestra el campo desplegable para seleccionar nivel de escolaridad
             EducationLevelDropdown(
                 escolaridad = escolaridad,
                 escolaridades = escolaridades,
@@ -342,6 +391,7 @@ fun PersonalDataScreen() {
                 onLevelSelected = { escolaridad = it }
             )
 
+            // Botón para avanzar al siguiente formulario
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -362,8 +412,12 @@ fun GenderSelection(
     selectedSex: String,
     onSexSelected: (String) -> Unit
 ) {
+
+    // Traduce a los textos localizados "Masculino" y "Femenino"
     val male = stringResource(R.string.male)
     val female = stringResource(R.string.female)
+
+    // Layout principal: fila centrada horizontalmente
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -371,20 +425,28 @@ fun GenderSelection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
+
+        // Icono de cara representando género
         Icon(
             imageVector = Icons.Default.Face,
             contentDescription = "gender",
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
+
+        // Texto "Género:"
         Text(
             text = "${stringResource(R.string.gender)} :",
             modifier = Modifier.padding(end = 16.dp)
         )
+
+        // Opciones masculinas y femeninas en una fila separada
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+            // Opción masculino
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = selectedSex == male,
@@ -397,6 +459,8 @@ fun GenderSelection(
                         .padding(start = 4.dp)
                 )
             }
+
+            // Opción femenino
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = selectedSex == female,
@@ -416,18 +480,22 @@ fun GenderSelection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateSelectionField(
-    selectedDate: Date?,
-    isError: Boolean,
-    onDateSelected: (Date) -> Unit,
-    showDatePicker: Boolean,
-    onShowDatePickerChanged: (Boolean) -> Unit,
-    datePickerState: DatePickerState,
-    dateFormatter: SimpleDateFormat
+    selectedDate: Date?,                       // Fecha seleccionada actualmente
+    isError: Boolean,                          // Indica si el campo presenta error
+    onDateSelected: (Date) -> Unit,             // Función a ejecutar cuando se selecciona fecha
+    showDatePicker: Boolean,                    // Indica si el DatePicker está abierto
+    onShowDatePickerChanged: (Boolean) -> Unit, // Función para abrir/cerrar DatePicker
+    datePickerState: DatePickerState,           // Estado interno del DatePicker
+    dateFormatter: SimpleDateFormat             // Formato para mostrar la fecha
 ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Column {
+
+        // Etiqueta indicando campo obligatorio
         RequiredFieldLabel(text = stringResource(R.string.birth_date))
+
+        // Campo de texto que muestra la fecha seleccionada
         OutlinedTextField(
             value = selectedDate?.let { dateFormatter.format(it) } ?: "",
             onValueChange = {},
@@ -435,12 +503,16 @@ fun DateSelectionField(
             modifier = Modifier.fillMaxWidth(),
             isError = isError,
             trailingIcon = {
+
+                // Botón con ícono de calendario para abrir DatePicker
                 IconButton(onClick = { onShowDatePickerChanged(true) }) {
                     Icon(Icons.Default.DateRange, contentDescription = "Seleccionar fecha")
                 }
             },
             placeholder = { Text(stringResource(R.string.select_date)) }
         )
+
+        // Si hay error, se muestra mensaje
         if (isError) {
             ErrorText(
                 text = stringResource(R.string.required_field),
@@ -449,8 +521,11 @@ fun DateSelectionField(
             )
         }
 
+        // Si el DatePicker está abierto:
         if (showDatePicker) {
             if (isLandscape) {
+
+                // Para orientación horizontal: más espacio vertical en el DatePicker
                 DatePickerDialog(
                     onDismissRequest = { onShowDatePickerChanged(false) },
                     confirmButton = {
@@ -487,6 +562,8 @@ fun DateSelectionField(
                     }
                 }
             } else {
+
+                // Para orientación vertical: diálogo de tamaño normal
                 DatePickerDialog(
                     onDismissRequest = { onShowDatePickerChanged(false) },
                     confirmButton = {
@@ -522,18 +599,24 @@ fun DateSelectionField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EducationLevelDropdown(
-    escolaridad: String,
-    escolaridades: List<String>,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    onLevelSelected: (String) -> Unit
+    escolaridad: String,                      // Nivel educativo seleccionado
+    escolaridades: List<String>,               // Lista de opciones de niveles educativos
+    expanded: Boolean,                         // Indica si el menú desplegable está abierto
+    onExpandedChange: (Boolean) -> Unit,        // Función para cambiar el estado expandido
+    onLevelSelected: (String) -> Unit           // Función que se llama al seleccionar un nivel
 ) {
     Column {
+
+        // Título simple encima del menú
         Text(text = stringResource(R.string.education_level))
+
+        // Componente de menú desplegable expuesto
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = onExpandedChange
         ) {
+
+            // Campo de texto donde se muestra el nivel seleccionado (solo lectura)
             OutlinedTextField(
                 value = escolaridad,
                 onValueChange = {},
@@ -553,16 +636,19 @@ fun EducationLevelDropdown(
                 label = { Text(stringResource(R.string.label_educational_level)) }
             )
 
+            // Menú desplegable que muestra las opciones de escolaridad
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { onExpandedChange(false) }
             ) {
+
+                // Por cada nivel de escolaridad disponible, crea un ítem de menú
                 escolaridades.forEach { nivel ->
                     DropdownMenuItem(
                         text = { Text(nivel) },
                         onClick = {
-                            onLevelSelected(nivel)
-                            onExpandedChange(false)
+                            onLevelSelected(nivel)    // Actualiza selección
+                            onExpandedChange(false)   // Cierra el menú al seleccionar
                         }
                     )
                 }
@@ -574,7 +660,11 @@ fun EducationLevelDropdown(
 @Composable
 fun RequiredFieldLabel(text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
+
+        // Texto del campo
         Text(text)
+
+        // Asterisco rojo para indicar que es obligatorio
         Text(
             text = "*",
             color = MaterialTheme.colorScheme.error,
@@ -586,9 +676,9 @@ fun RequiredFieldLabel(text: String) {
 @Composable
 fun ErrorText(text: String, modifier: Modifier = Modifier) {
     Text(
-        text = text,
-        color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.bodySmall,
+        text = text, // Mensaje de error
+        color = MaterialTheme.colorScheme.error, // Color de error definido por el tema
+        style = MaterialTheme.typography.bodySmall, // Estilo de texto pequeño
         modifier = modifier
     )
 }

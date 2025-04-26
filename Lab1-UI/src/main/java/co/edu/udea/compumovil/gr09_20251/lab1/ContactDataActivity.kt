@@ -38,12 +38,14 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+// Clase que representa una ciudad obtenida de la API
 @Serializable
 data class City(
     val id: Int,
     val name: String
 )
 
+// Actividad principal para la captura de datos de contacto
 class ContactDataActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,16 +58,22 @@ class ContactDataActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactDataScreen() {
+    // Estados para almacenar los datos ingresados
     var telefono by rememberSaveable { mutableStateOf("") }
     var direccion by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var pais by rememberSaveable { mutableStateOf("") }
     var ciudad by rememberSaveable { mutableStateOf("") }
+
+    // Estados para manejar la expansión de los menús desplegables
     var paisExpanded by rememberSaveable { mutableStateOf(false) }
     var ciudadExpanded by rememberSaveable { mutableStateOf(false) }
+
+    // Lista de ciudades cargadas desde la API y estado de carga
     var ciudades by rememberSaveable { mutableStateOf<List<City>>(emptyList()) }
     var isLoadingCities by rememberSaveable { mutableStateOf(false) }
 
+    // Estados para validación de campos
     var telefonoError by rememberSaveable { mutableStateOf(false) }
     var emailError by rememberSaveable { mutableStateOf(false) }
     var paisError by rememberSaveable { mutableStateOf(false) }
@@ -76,6 +84,7 @@ fun ContactDataScreen() {
     val paises = listOf(*context.resources.getStringArray(R.array.latin_america_countries))
     val coroutineScope = rememberCoroutineScope()
 
+    // Función para cargar las ciudades desde una API si el país es Colombia
     fun loadCities() {
         if (pais != "Colombia") {
             ciudades = emptyList()
@@ -114,6 +123,7 @@ fun ContactDataScreen() {
         }
     }
 
+    // Cada vez que se cambie el país, se recargan ciudades si aplica
     LaunchedEffect(pais) {
         if (pais == "Colombia") {
             loadCities()
@@ -123,11 +133,13 @@ fun ContactDataScreen() {
         }
     }
 
+    // Función para validar formato de email
     fun isValidEmail(email: String): Boolean {
         val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$")
         return email.matches(emailRegex)
     }
 
+    // Función para validar todos los campos
     fun validateFields(): Boolean {
         telefonoError = telefono.isBlank()
         emailError = email.isBlank() || !isValidEmail(email)
@@ -136,6 +148,7 @@ fun ContactDataScreen() {
         return !telefonoError && !emailError && !paisError && !ciudadError
     }
 
+    // Función para registrar en Logcat los datos ingresados
     fun logContactData(context: Context, telefono: String, direccion: String, email: String, pais: String) {
         Log.d("ContactData", "***********************************")
         Log.d("ContactData", context.getString(R.string.log_contact_data_title))
@@ -151,6 +164,7 @@ fun ContactDataScreen() {
         Log.d("ContactData", "***********************************")
     }
 
+    // Función que maneja la acción del botón "Siguiente"
     fun handleNextButton() {
         if (validateFields()) {
             logContactData(
@@ -169,6 +183,7 @@ fun ContactDataScreen() {
         }
     }
 
+    // Verificamos si el dispositivo está en modo horizontal (landscape)
     if (isLandscape) {
         Column(
             modifier = Modifier
@@ -177,16 +192,21 @@ fun ContactDataScreen() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+            // Título de la pantalla
             Text(
                 text = stringResource(R.string.contact_data_title),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Primera fila: Teléfono y Dirección
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
+                // Campo Teléfono
                 OutlinedTextField(
                     value = telefono,
                     onValueChange = {
@@ -212,6 +232,7 @@ fun ContactDataScreen() {
                     singleLine = true
                 )
 
+                // Campo Dirección
                 OutlinedTextField(
                     value = direccion,
                     onValueChange = { direccion = it },
@@ -232,6 +253,7 @@ fun ContactDataScreen() {
                 )
             }
 
+            // Campo Email
             OutlinedTextField(
                 value = email,
                 onValueChange = {
@@ -263,10 +285,13 @@ fun ContactDataScreen() {
                 singleLine = true
             )
 
+            // Segunda fila: País y Ciudad
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
+                // Selector de País
                 CountryDropdown(
                     selectedCountry = pais,
                     countries = paises,
@@ -277,6 +302,7 @@ fun ContactDataScreen() {
                     modifier = Modifier.weight(1f)
                 )
 
+                // Si el país es Colombia, muestra selector de Ciudad
                 if (pais == "Colombia") {
                     CityDropdown(
                         selectedCity = ciudad,
@@ -293,6 +319,7 @@ fun ContactDataScreen() {
                 }
             }
 
+            // Botón Siguiente
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -306,17 +333,22 @@ fun ContactDataScreen() {
             }
         }
     } else {
+
+        // Layout para modo vertical (portrait)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+            // Título de la pantalla
             Text(
                 text = stringResource(R.string.contact_data_title),
                 style = MaterialTheme.typography.headlineMedium
             )
 
+            // Campo Teléfono
             OutlinedTextField(
                 value = telefono,
                 onValueChange = {
@@ -342,6 +374,7 @@ fun ContactDataScreen() {
                 singleLine = true
             )
 
+            // Campo Dirección
             OutlinedTextField(
                 value = direccion,
                 onValueChange = { direccion = it },
@@ -362,6 +395,7 @@ fun ContactDataScreen() {
                 maxLines = 3
             )
 
+            // Campo Email
             OutlinedTextField(
                 value = email,
                 onValueChange = {
@@ -393,6 +427,7 @@ fun ContactDataScreen() {
                 singleLine = true
             )
 
+            // Selector de País
             CountryDropdown(
                 selectedCountry = pais,
                 countries = paises,
@@ -402,6 +437,7 @@ fun ContactDataScreen() {
                 isError = paisError
             )
 
+            // Selector de Ciudad si aplica
             if (pais == "Colombia") {
                 CityDropdown(
                     selectedCity = ciudad,
@@ -414,6 +450,7 @@ fun ContactDataScreen() {
                 )
             }
 
+            // Botón Siguiente
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -429,19 +466,20 @@ fun ContactDataScreen() {
     }
 }
 
+// Composable para mostrar el Dropdown de selección de país
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryDropdown(
-    selectedCountry: String,
-    countries: List<String>,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    onCountrySelected: (String) -> Unit,
-    isError: Boolean,
-    modifier: Modifier = Modifier
+    selectedCountry: String,                  // País actualmente seleccionado
+    countries: List<String>,                  // Lista de países disponibles
+    expanded: Boolean,                        // Estado de expansión del menú desplegable
+    onExpandedChange: (Boolean) -> Unit,       // Función para cambiar el estado de expansión
+    onCountrySelected: (String) -> Unit,       // Función que se ejecuta al seleccionar un país
+    isError: Boolean,                          // Estado de error para validación
+    modifier: Modifier = Modifier              // Modificador para personalizar el componente
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
-    val filteredCountries = remember(query, countries) {
+    var query by rememberSaveable { mutableStateOf("") } // Texto que escribe el usuario
+    val filteredCountries = remember(query, countries) { // Lista de países filtrados
         if (query.isBlank()) {
             countries
         } else {
@@ -450,16 +488,18 @@ fun CountryDropdown(
     }
 
     Column(modifier = modifier) {
+        // Caja que combina el campo de texto con el menú desplegable
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { onExpandedChange(it) }
         ) {
+            // Campo de texto para mostrar país seleccionado o búsqueda
             OutlinedTextField(
                 value = if (expanded) query else selectedCountry,
                 onValueChange = {
                     query = it
                     if (it.isNotBlank()) {
-                        onExpandedChange(true)
+                        onExpandedChange(true) // Abre el menú cuando escribe
                     }
                 },
                 label = { RequiredFieldLabel(stringResource(R.string.country)) },
@@ -486,6 +526,7 @@ fun CountryDropdown(
                 singleLine = true
             )
 
+            // Menú desplegable de países
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = {
@@ -494,11 +535,13 @@ fun CountryDropdown(
                 }
             ) {
                 if (filteredCountries.isEmpty()) {
+                    // Mensaje si no se encuentran países
                     DropdownMenuItem(
                         text = { Text("No se encontraron países") },
                         onClick = {}
                     )
                 } else {
+                    // Lista de países filtrados
                     filteredCountries.forEach { country ->
                         DropdownMenuItem(
                             text = { Text(country) },
@@ -515,19 +558,24 @@ fun CountryDropdown(
     }
 }
 
+// Composable que muestra un menú desplegable para seleccionar una ciudad
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CityDropdown(
-    selectedCity: String,
-    cities: List<String>,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    onCitySelected: (String) -> Unit,
-    isError: Boolean,
-    isLoading: Boolean,
-    modifier: Modifier = Modifier
+    selectedCity: String,                  // Ciudad actualmente seleccionada
+    cities: List<String>,                  // Lista completa de ciudades disponibles
+    expanded: Boolean,                     // Estado de expansión del menú desplegable
+    onExpandedChange: (Boolean) -> Unit,    // Función para cambiar la expansión del menú
+    onCitySelected: (String) -> Unit,       // Función que se ejecuta al seleccionar una ciudad
+    isError: Boolean,                       // Bandera que indica si hay error de validación
+    isLoading: Boolean,                     // Bandera que indica si las ciudades están cargando
+    modifier: Modifier = Modifier           // Modificador opcional para personalizar el estilo
 ) {
+
+    // Variable para almacenar el texto de búsqueda ingresado por el usuari
     var query by rememberSaveable { mutableStateOf("") }
+
+    // Lista de ciudades filtradas según el texto de búsqueda
     val filteredCities = remember(query, cities) {
         if (query.isBlank()) {
             cities
@@ -537,27 +585,32 @@ fun CityDropdown(
     }
 
     Column(modifier = modifier) {
+
+        // Caja que integra el TextField y el menú desplegable
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { onExpandedChange(it) }
         ) {
+
+            // Campo de texto para mostrar la ciudad seleccionada o búsqueda
             OutlinedTextField(
                 value = if (expanded) query else selectedCity,
                 onValueChange = {
                     query = it
                     if (it.isNotBlank()) {
-                        onExpandedChange(true)
+                        onExpandedChange(true) // Expande automáticamente cuando el usuario escribe
                     }
                 },
                 label = { RequiredFieldLabel(stringResource(R.string.city)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Place,
-                        contentDescription = "City"
+                        contentDescription = "City"  // Descripción accesible del icono
                     )
                 },
                 trailingIcon = {
                     if (isLoading) {
+                        // Indicador de progreso si las ciudades están cargando
                         CircularProgressIndicator(modifier = Modifier.size(20.dp))
                     } else {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -566,7 +619,7 @@ fun CityDropdown(
                 modifier = Modifier
                     .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
                     .fillMaxWidth(),
-                isError = isError,
+                isError = isError, // Muestra el borde de error si hay un problema de validación
                 supportingText = {
                     if (isError) ErrorText(stringResource(R.string.required_field))
                 },
@@ -575,17 +628,20 @@ fun CityDropdown(
                     imeAction = ImeAction.Next
                 ),
                 singleLine = true,
-                enabled = !isLoading
+                enabled = !isLoading // Desactiva la entrada si las ciudades aún están cargando
             )
 
+            // Menú desplegable que muestra las ciudades disponibles
             ExposedDropdownMenu(
                 expanded = expanded && !isLoading,
                 onDismissRequest = {
                     onExpandedChange(false)
-                    query = ""
+                    query = ""  // Resetea el query cuando el menú se cierra
                 }
             ) {
                 if (filteredCities.isEmpty()) {
+
+                    // Si no hay resultados después de buscar
                     DropdownMenuItem(
                         text = {
                             if (isLoading) {
@@ -597,13 +653,15 @@ fun CityDropdown(
                         onClick = {}
                     )
                 } else {
+
+                    // Lista las ciudades filtradas para que el usuario pueda seleccionarlas
                     filteredCities.forEach { city ->
                         DropdownMenuItem(
                             text = { Text(city) },
                             onClick = {
-                                onCitySelected(city)
-                                onExpandedChange(false)
-                                query = ""
+                                onCitySelected(city) // Asigna la ciudad seleccionada
+                                onExpandedChange(false) // Cierra el menú
+                                query = "" // Limpia el campo de búsqueda
                             }
                         )
                     }

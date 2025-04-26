@@ -30,6 +30,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
+
+                    // Llama a la pantalla de inicio
                     HomeScreen()
                 }
             }
@@ -40,20 +43,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomeScreen() {
     val context = LocalContext.current
-
+    // Contenedor vertical que centra los elementos
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize() // Ocupa toda la pantalla
+            .padding(16.dp), // Agrega margen
+        verticalArrangement = Arrangement.Center, // Centra verticalmente
+        horizontalAlignment = Alignment.CenterHorizontally  // Centra horizontalmente
     ) {
+        // Texto de bienvenida
         Text(
-            text = stringResource(R.string.welcome),
+            text = stringResource(R.string.welcome), // Carga texto desde strings.xml
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
-
+        // Botón que navega a la actividad PersonalDataActivity
         Button(
             onClick = {
                 val intent = Intent(context, PersonalDataActivity::class.java)
