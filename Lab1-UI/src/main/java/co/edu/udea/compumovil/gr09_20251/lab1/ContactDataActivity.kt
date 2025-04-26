@@ -1,6 +1,7 @@
 package co.edu.udea.compumovil.gr09_20251.lab1
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -154,8 +160,10 @@ fun ContactDataScreen() {
                 email = email,
                 pais = pais
             )
-            // Navegar a la siguiente actividad cuando la implementemos
-            // context.startActivity(Intent(context, NextActivity::class.java))
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            context.startActivity(intent)
         } else {
             Log.w("ContactData", "Validación fallida - Complete los campos obligatorios")
         }
@@ -188,6 +196,12 @@ fun ContactDataScreen() {
                     label = { RequiredFieldLabel(stringResource(R.string.phone)) },
                     modifier = Modifier.weight(1f),
                     isError = telefonoError,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Phone,
+                            contentDescription = "Phone"
+                        )
+                    },
                     supportingText = {
                         if (telefonoError) ErrorText(stringResource(R.string.required_field))
                     },
@@ -203,6 +217,12 @@ fun ContactDataScreen() {
                     onValueChange = { direccion = it },
                     label = { Text(stringResource(R.string.address)) },
                     modifier = Modifier.weight(1f),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Home"
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(
                         autoCorrectEnabled = false,
                         keyboardType = KeyboardType.Text,
@@ -221,6 +241,12 @@ fun ContactDataScreen() {
                 label = { RequiredFieldLabel(stringResource(R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = emailError,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email"
+                    )
+                },
                 supportingText = {
                     if (emailError) {
                         if (email.isBlank()) {
@@ -300,6 +326,12 @@ fun ContactDataScreen() {
                 label = { RequiredFieldLabel(stringResource(R.string.phone)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = telefonoError,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Phone,
+                        contentDescription = "Phone"
+                    )
+                },
                 supportingText = {
                     if (telefonoError) ErrorText(stringResource(R.string.required_field))
                 },
@@ -315,6 +347,12 @@ fun ContactDataScreen() {
                 onValueChange = { direccion = it },
                 label = { Text(stringResource(R.string.address)) },
                 modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Home"
+                    )
+                },
                 keyboardOptions = KeyboardOptions(
                     autoCorrectEnabled = false,
                     keyboardType = KeyboardType.Text,
@@ -333,6 +371,12 @@ fun ContactDataScreen() {
                 label = { RequiredFieldLabel(stringResource(R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = emailError,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email"
+                    )
+                },
                 supportingText = {
                     if (emailError) {
                         if (email.isBlank()) {
@@ -419,6 +463,12 @@ fun CountryDropdown(
                     }
                 },
                 label = { RequiredFieldLabel(stringResource(R.string.country)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = "Country"
+                    )
+                },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
@@ -500,6 +550,12 @@ fun CityDropdown(
                     }
                 },
                 label = { RequiredFieldLabel(stringResource(R.string.city)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = "City"
+                    )
+                },
                 trailingIcon = {
                     if (isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(20.dp))

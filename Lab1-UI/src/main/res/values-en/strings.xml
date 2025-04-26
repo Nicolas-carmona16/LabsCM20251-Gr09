@@ -1,6 +1,8 @@
 <resources>
     <string name="title_activity_estoesactivity">Thisisactivity</string>
     <string name="title_activity_personal_data">PersonalDataActivity</string>
+    <string name="welcome">Welcome!!!</string>
+    <string name="button_to_personal_data">Go to Personal Data</string>
     <string name="app_name">Personal Data</string>
     <string name="personal_data_title">Personal Data</string>
     <string name="first_names">First Names</string>

@@ -49,6 +49,9 @@ import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.DatePickerState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -165,6 +168,12 @@ fun PersonalDataScreen() {
                         },
                         label = { RequiredFieldLabel(stringResource(R.string.first_names)) },
                         modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "firstNames"
+                            )
+                        },
                         isError = nombresError,
                         supportingText = {
                             if (nombresError) ErrorText(stringResource(R.string.required_field))
@@ -188,6 +197,12 @@ fun PersonalDataScreen() {
                         },
                         label = { RequiredFieldLabel(stringResource(R.string.last_names)) },
                         modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "lastNames"
+                            )
+                        },
                         isError = apellidosError,
                         supportingText = {
                             if (apellidosError) ErrorText(stringResource(R.string.required_field))
@@ -258,6 +273,12 @@ fun PersonalDataScreen() {
                 },
                 label = { RequiredFieldLabel(stringResource(R.string.first_names)) },
                 modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "firstNames"
+                    )
+                },
                 isError = nombresError,
                 supportingText = {
                     if (nombresError) ErrorText(stringResource(R.string.required_field))
@@ -279,6 +300,12 @@ fun PersonalDataScreen() {
                 },
                 label = { RequiredFieldLabel(stringResource(R.string.last_names)) },
                 modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "lastNames"
+                    )
+                },
                 isError = apellidosError,
                 supportingText = {
                     if (apellidosError) ErrorText(stringResource(R.string.required_field))
@@ -344,6 +371,12 @@ fun GenderSelection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
+        Icon(
+            imageVector = Icons.Default.Face,
+            contentDescription = "gender",
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = "${stringResource(R.string.gender)} :",
             modifier = Modifier.padding(end = 16.dp)
@@ -505,6 +538,12 @@ fun EducationLevelDropdown(
                 value = escolaridad,
                 onValueChange = {},
                 readOnly = true,
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "educationalLevel"
+                    )
+                },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
